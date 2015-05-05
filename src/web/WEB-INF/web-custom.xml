@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+    <!-- Servlets -->
+    <servlet>
+        <servlet-name>ChatLogsServlet</servlet-name>
+        <servlet-class>com.yappam.openfire.plugin.chatlogs.web.ChatLogsServlet</servlet-class>
+    </servlet>
+
+    <!-- Servlet mappings -->
+    <servlet-mapping>
+        <servlet-name>ChatLogsServlet</servlet-name>
+        <url-pattern>/chatlogs</url-pattern>
+    </servlet-mapping>
+
+</web-app>
