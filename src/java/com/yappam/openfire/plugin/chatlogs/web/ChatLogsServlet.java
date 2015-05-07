@@ -94,13 +94,21 @@ public class ChatLogsServlet extends HttpServlet {
 		logger.debug("Find chatLog size[{}]", chatLogs.size());
 		
 		String res = "";
-		if ("json".equalsIgnoreCase(request.getParameter("type"))) {
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("data", chatLogs);
-			map.put("more", page.isMore());
-			StringWriter writer = new StringWriter();
-			mapper.writeValue(writer, map);
-			
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("data", chatLogs);
+		map.put("more", page.isMore());
+		StringWriter writer = new StringWriter();
+		mapper.writeValue(writer, map);
+		
+		String type = request.getParameter("type");
+		
+		if (StringUtils.isEmpty(type) || "json".equalsIgnoreCase(type)) {
+			res = writer.toString();
+ 			response.setContentType("application/json");
+
+ 			out(response, res);
+		} else if ("jsonp".equalsIgnoreCase(type)) {			
 			res = "load_chatlogs_success(" + writer.toString() + ")";
  			response.setContentType("application/json");
 

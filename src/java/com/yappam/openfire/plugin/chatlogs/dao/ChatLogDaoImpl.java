@@ -355,8 +355,6 @@ public class ChatLogDaoImpl implements ChatLogDao {
 			int i = 1;
 			psm.setString(i++, chatLog.getSender());
 			psm.setString(i++, chatLog.getReceiver());
-			psm.setString(i++, chatLog.getReceiver());
-			psm.setString(i++, chatLog.getSender());
 
 			psm.execute();
 		} catch (SQLException e) {

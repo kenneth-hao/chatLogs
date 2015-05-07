@@ -1,0 +1,46 @@
+
+URL:
+	FORMAT >> http://[服务器地址]:9090/plugins/chatlogs
+	EXAMPLE >> http://spark-chat.cadillac-1.com:9090/plugins/chatlogs
+
+PARAMS:
+	sender -> '当前用户名'
+	receiver -> '聊天对象的用户名'
+	pageNum -> '页码, 默认[1]'
+	pageSize -> '每页数量, 默认[15]'
+	type -> '请求数据类型, 默认[json]'
+
+	EXAMPLE:
+		http://spark-chat.cadillac-1.com:9090/plugins/chatlogs?sender=oacdbudx8uvdegrtyrxp1tp4vkpy&receiver=app001
+
+RETURN:
+	{
+		"more": "true -> 存在更多聊天记录; false -> 不存在更多聊天记录",
+		"data": [
+			"id": "唯一标识",
+			"sessionJID": "会话JID, 格式: 消息发送者@DOMAIN/RESOURCE",
+			"sender": "消息发送者",
+			"receiver": "消息接收者",
+			"createDate": "消息创建时间",
+			"content": "聊天内容",
+            "offline": "是否为离线消息 >> 1 离线消息 当前用户每次读取聊天记录后, 重置置为0 (正常聊天记录)"
+		]
+	}
+
+
+
+	EXAMPLE:
+		{
+		    "more": true,
+		    "data": [
+		        {
+		            "id": 2448,
+		            "sessionJID": "oacdbudx8uvdegrtyrxp1tp4vkpy@spark-chat.cadillac-1.com/WebWechat",
+		            "sender": "oacdbudx8uvdegrtyrxp1tp4vkpy",
+		            "receiver": "app001",
+		            "createDate": 1430814293000,
+		            "content": "早个什",
+		            "offline": 0
+		        }
+		    ]
+		}
