@@ -64,7 +64,7 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
 	public void interceptPacket(Packet packet, Session session,
 			boolean incoming, boolean processed) throws PacketRejectedException {
 		if (session != null) {
-            // debug(packet, incoming, processed, session);
+            debug(packet, incoming, processed, session);
         }
         
         JID recipient = packet.getTo();
@@ -73,10 +73,12 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
             // 广播消息或是不存在/没注册的用户.
             if (username == null || !UserManager.getInstance().isRegisteredUser(recipient)) {
                 return;
-            } else if (!XMPPServer.getInstance().getServerInfo().getXMPPDomain().equals(recipient.getDomain())) {
+            } 
+            if (!XMPPServer.getInstance().getServerInfo().getXMPPDomain().equals(recipient.getDomain())) {
                 // 非当前openfire服务器信息
                 return;	
-            } else if ("".equals(recipient.getResource())) {
+            } 
+            if ("".equals(recipient.getResource())) {
             	
             }
         }
@@ -112,20 +114,23 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
                             .getUser(recipient.getNode()));  
 	                ChatLog chatLog = this.get(copyPacket, incoming, session);
 	                
-	                if (status != null) {
-	                	chatLog.setOffline(ChatLog.NON_OFFLINE_MSG);
-	                } else {
-	                	chatLog.setOffline(ChatLog.OFFLINE_MSG);
-	                }
+	                if (chatLog != null) {
 	                
-	                String fromUserID = getFromUser(message, propKey);
-
-    				if (fromUserID != null && fromUserID.equals(chatLog.getReceiver())) {
-    					return;
-    				}
-
-    				chatLogDao.save(chatLog);
-    				logger.debug("Save chatLog[{}]", chatLog);
+		                if (status != null) {
+		                	chatLog.setOffline(ChatLog.NON_OFFLINE_MSG);
+		                } else {
+		                	chatLog.setOffline(ChatLog.OFFLINE_MSG);
+		                }
+		                
+		                String fromUserID = getFromUser(message, propKey);
+	
+	    				if (fromUserID != null && fromUserID.equals(chatLog.getReceiver())) {
+	    					return;
+	    				}
+	
+	    				chatLogDao.save(chatLog);
+	    				logger.debug("Save chatLog[{}]", chatLog);
+	                }
 				} catch (UserNotFoundException  e) {
 					logger.warn("exceptoin " + recipient.getNode() + " not find"  
                             + ",full jid: " + recipient.toFullJID()); 
@@ -148,11 +153,16 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
 		if (session != null) {
 			chatLog.setSessionJID(session.getAddress().toString());
 		}
-		
-		chatLog.setContent(message.getBody());
+		String content = message.getBody();
+		if (content == null) {
+			return null;
+		}
+		chatLog.setContent(content);
 		chatLog.setCreateDate(new Timestamp(new Date().getTime()));
 		chatLog.setDetail(message.toXML());
-		chatLog.setLength(chatLog.getContent().length());
+		if (chatLog.getContent() != null) {
+			chatLog.setLength(chatLog.getContent().length());
+		}
 		chatLog.setState(0);
 
 		return chatLog;
