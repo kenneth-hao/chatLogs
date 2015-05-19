@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-
+import org.dom4j.Element;
 import org.jivesoftware.openfire.PresenceManager;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.container.Plugin;
@@ -22,8 +22,6 @@ import org.xmpp.packet.JID;
 import org.xmpp.packet.Message;
 import org.xmpp.packet.Packet;
 import org.xmpp.packet.Presence;
-
-import org.dom4j.Element;
 
 import com.yappam.openfire.plugin.chatlogs.dao.ChatLogDao;
 import com.yappam.openfire.plugin.chatlogs.dao.ChatLogDaoImpl;
@@ -43,8 +41,8 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
 	
 	private PresenceManager presenceManager;  
 	
-	private UserManager userManager;  
-
+	private UserManager userManager;
+	
 	@Override
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
 		XMPPServer server = XMPPServer.getInstance();
@@ -57,7 +55,6 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
 	@Override
 	public void destroyPlugin() {
 		interceptorManager.removeInterceptor(this);
-		
 	}
 
 	@Override
@@ -93,9 +90,6 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
 			Message message = (Message) copyPacket;
 
 			if (message.getType() == Message.Type.chat || message.getType() == Message.Type.groupchat) {
-				if (session == null) {
-					return;
-				}
 				if (processed || !incoming) {
 					return;
 				}
@@ -129,7 +123,7 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
 	    				}
 	
 	    				chatLogDao.save(chatLog);
-	    				logger.debug("Save chatLog[{}]", chatLog);
+	    				logger.info("Save chatLog[{}]", chatLog);
 	                }
 				} catch (UserNotFoundException  e) {
 					logger.warn("exceptoin " + recipient.getNode() + " not find"  
@@ -143,7 +137,7 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
 		Message message = (Message) packet;
 		ChatLog chatLog = new ChatLog();
 		
-		JID jid = session.getAddress();
+		JID jid = message.getFrom();
         if (incoming) {        // 发送者
         	chatLog.setSender(jid.getNode());
             JID recipient = message.getTo();
@@ -168,6 +162,7 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
 		return chatLog;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private String getFromUser(Message message, String propKey) {
 		Element propElem = message.getElement().element("properties");
 		if (propElem == null) {
@@ -203,14 +198,12 @@ public class ChatLogsPlugin implements Plugin, PacketInterceptor {
         debug("xml: " + packet.toXML());
         debug("################### end #####################" + timed);
         
-        logger.info("id:" + session.getStreamID() + ", address: " + session.getAddress());
-        logger.info("info: {}", info);
-        logger.info("plugin Name: " + pluginManager.getName(this) + ", xml: " + packet.toXML());
+        logger.debug("id:" + session.getStreamID() + ", address: " + session.getAddress());
+        logger.debug("info: {}", info);
+        logger.debug("plugin Name: " + pluginManager.getName(this) + ", xml: " + packet.toXML());
     }
     
     private void debug(Object message) {
-        if (true) {
-            System.out.println(message);
-        }
+		logger.debug("plugin {}: [{}]", pluginManager.getName(this), message);
     }
 }
